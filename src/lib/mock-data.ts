@@ -16,6 +16,24 @@ export const mockPlatformData = [
   { name: "Outros", value: 7, color: "hsl(40, 80%, 55%)" },
 ];
 
+export const PLAN_NAMES = {
+  perRelease: [
+    { id: "orbit", name: "Orbit", price: "R$ 19,90", period: "por lançamento", commission: "10%", features: ["Distribuição para 150+ plataformas", "Estatísticas básicas", "Suporte por email", "1 artista"], highlighted: false },
+    { id: "nebula", name: "Nebula", price: "R$ 49,90", period: "por lançamento", commission: "0%", features: ["Distribuição para 150+ plataformas", "0% de comissão", "Pitching para playlists", "Content ID YouTube", "Suporte prioritário", "1 artista"], highlighted: true },
+  ],
+  subscriptions: [
+    { id: "dark-orbit", name: "Dark Orbit", price: "R$ 199,90", period: "/ano", commission: "0%", features: ["Lançamentos ilimitados", "0% de comissão", "1 artista", "Estatísticas avançadas", "Suporte prioritário"], highlighted: false },
+    { id: "void", name: "Void", price: "R$ 349,90", period: "/ano", commission: "0%", features: ["Tudo do Dark Orbit", "Até 5 artistas", "Pitching para playlists", "Content ID YouTube", "Relatórios detalhados"], highlighted: true },
+    { id: "singularity", name: "Singularity", price: "R$ 599,90", period: "/ano", commission: "0%", features: ["Tudo do Void", "Artistas ilimitados", "Ideal para selos", "Masterização grátis", "Suporte VIP dedicado", "API de integração"], highlighted: false },
+  ],
+};
+
+// Keep backward compat
+export const plans = {
+  perRelease: PLAN_NAMES.perRelease,
+  subscriptions: PLAN_NAMES.subscriptions,
+};
+
 export const mockReleases = [
   { id: "1", title: "Noite Estrelada", type: "single" as const, cover: "/placeholder.svg", releaseDate: "2025-01-15", status: "published" as const, streams: 45200 },
   { id: "2", title: "Ecos do Amanhã", type: "album" as const, cover: "/placeholder.svg", releaseDate: "2024-11-20", status: "approved" as const, streams: 128700 },
@@ -38,54 +56,7 @@ export const mockNotifications = [
 ];
 
 export const mockArtists = [
-  { id: "1", name: "MC Luna", email: "luna@email.com", avatar: "/placeholder.svg", releases: 5, totalStreams: 241200, plan: "AMPLIFY" },
-  { id: "2", name: "DJ Cosmos", email: "cosmos@email.com", avatar: "/placeholder.svg", releases: 3, totalStreams: 89400, plan: "Starter" },
-  { id: "3", name: "Aria Nova", email: "aria@email.com", avatar: "/placeholder.svg", releases: 8, totalStreams: 567800, plan: "AMPLIFY Pro" },
+  { id: "1", name: "MC Luna", email: "luna@email.com", avatar: "/placeholder.svg", releases: 5, totalStreams: 241200, plan: "Void" },
+  { id: "2", name: "DJ Cosmos", email: "cosmos@email.com", avatar: "/placeholder.svg", releases: 3, totalStreams: 89400, plan: "Orbit" },
+  { id: "3", name: "Aria Nova", email: "aria@email.com", avatar: "/placeholder.svg", releases: 8, totalStreams: 567800, plan: "Singularity" },
 ];
-
-export const plans = {
-  perRelease: [
-    {
-      name: "Starter",
-      price: "R$ 19,90",
-      period: "por lançamento",
-      commission: "10%",
-      features: ["Distribuição para 150+ plataformas", "Estatísticas básicas", "Suporte por email", "1 artista"],
-      highlighted: false,
-    },
-    {
-      name: "Rockstar",
-      price: "R$ 49,90",
-      period: "por lançamento",
-      commission: "0%",
-      features: ["Distribuição para 150+ plataformas", "0% de comissão", "Pitching para playlists", "Content ID YouTube", "Suporte prioritário", "1 artista"],
-      highlighted: true,
-    },
-  ],
-  subscriptions: [
-    {
-      name: "AMPLIFY",
-      price: "R$ 199,90",
-      period: "/ano",
-      commission: "0%",
-      features: ["Lançamentos ilimitados", "0% de comissão", "1 artista", "Estatísticas avançadas", "Suporte prioritário"],
-      highlighted: false,
-    },
-    {
-      name: "AMPLIFY+",
-      price: "R$ 349,90",
-      period: "/ano",
-      commission: "0%",
-      features: ["Tudo do AMPLIFY", "Até 5 artistas", "Pitching para playlists", "Content ID YouTube", "Relatórios detalhados"],
-      highlighted: true,
-    },
-    {
-      name: "AMPLIFY Pro",
-      price: "R$ 599,90",
-      period: "/ano",
-      commission: "0%",
-      features: ["Tudo do AMPLIFY+", "Artistas ilimitados", "Ideal para selos", "Masterização grátis", "Suporte VIP dedicado", "API de integração"],
-      highlighted: false,
-    },
-  ],
-};

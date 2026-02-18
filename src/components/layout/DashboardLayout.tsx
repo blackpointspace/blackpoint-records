@@ -16,6 +16,7 @@ const adminLinks = [
   { to: "/admin", icon: LayoutDashboard, label: "Dashboard", badge: 0 },
   { to: "/admin/artists", icon: Users, label: "Artistas", badge: 0 },
   { to: "/admin/releases", icon: Disc3, label: "Lançamentos", badge: 0 },
+  { to: "/admin/royalties", icon: DollarSign, label: "Royalties", badge: 0 },
   { to: "/admin/notifications", icon: Bell, label: "Notificações", badge: 0 },
   { to: "/admin/import", icon: Upload, label: "Importar Streams", badge: 0 },
 ];
