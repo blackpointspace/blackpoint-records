@@ -20,6 +20,9 @@ import AdminReleases from "./pages/AdminReleases";
 import AdminImport from "./pages/AdminImport";
 import AdminRoyalties from "./pages/AdminRoyalties";
 import AdminArtists from "./pages/AdminArtists";
+import AdminBanners from "./pages/AdminBanners";
+import AdminSales from "./pages/AdminSales";
+import AdminPlaceholder from "./pages/AdminPlaceholder";
 import DashboardLayout from "./components/layout/DashboardLayout";
 import NotFound from "./pages/NotFound";
 
@@ -54,8 +57,19 @@ const App = () => (
               <Route path="releases" element={<AdminReleases />} />
               <Route path="artists" element={<AdminArtists />} />
               <Route path="royalties" element={<AdminRoyalties />} />
-              <Route path="notifications" element={<Notifications />} />
+              <Route path="sales" element={<AdminSales />} />
+              <Route path="banners" element={<AdminBanners />} />
               <Route path="import" element={<AdminImport />} />
+              <Route path="notifications" element={<Notifications />} />
+              <Route path="sellers" element={<AdminPlaceholder />} />
+              <Route path="reports" element={<AdminPlaceholder />} />
+              <Route path="marketing" element={<AdminPlaceholder />} />
+              <Route path="support" element={<AdminPlaceholder />} />
+              <Route path="payments" element={<AdminPlaceholder />} />
+              <Route path="website" element={<AdminPlaceholder />} />
+              <Route path="settings" element={<AdminPlaceholder />} />
+              <Route path="staff" element={<AdminPlaceholder />} />
+              <Route path="system" element={<AdminPlaceholder />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />
