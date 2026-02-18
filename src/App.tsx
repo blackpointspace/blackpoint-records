@@ -3,6 +3,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/contexts/AuthContext";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Pricing from "./pages/Pricing";
 import Login from "./pages/Login";
@@ -23,39 +25,41 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/precos" element={<Pricing />} />
-          <Route path="/login" element={<Login />} />
+    <AuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/precos" element={<Pricing />} />
+            <Route path="/login" element={<Login />} />
 
-          {/* Artist Dashboard */}
-          <Route path="/dashboard" element={<DashboardLayout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="releases" element={<Releases />} />
-            <Route path="releases/new" element={<NewRelease />} />
-            <Route path="royalties" element={<Royalties />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="notifications" element={<Notifications />} />
-            <Route path="documents" element={<Documents />} />
-          </Route>
+            {/* Artist Dashboard */}
+            <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+              <Route index element={<Dashboard />} />
+              <Route path="releases" element={<Releases />} />
+              <Route path="releases/new" element={<NewRelease />} />
+              <Route path="royalties" element={<Royalties />} />
+              <Route path="profile" element={<Profile />} />
+              <Route path="notifications" element={<Notifications />} />
+              <Route path="documents" element={<Documents />} />
+            </Route>
 
-          {/* Admin */}
-          <Route path="/admin" element={<DashboardLayout isAdmin />}>
-            <Route index element={<AdminDashboard />} />
-            <Route path="releases" element={<AdminReleases />} />
-            <Route path="artists" element={<AdminDashboard />} />
-            <Route path="notifications" element={<Notifications />} />
-            <Route path="import" element={<AdminImport />} />
-          </Route>
+            {/* Admin */}
+            <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><DashboardLayout isAdmin /></ProtectedRoute>}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="releases" element={<AdminReleases />} />
+              <Route path="artists" element={<AdminDashboard />} />
+              <Route path="notifications" element={<Notifications />} />
+              <Route path="import" element={<AdminImport />} />
+            </Route>
 
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 

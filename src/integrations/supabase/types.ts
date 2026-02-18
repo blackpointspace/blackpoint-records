@@ -14,16 +14,270 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      documents: {
+        Row: {
+          created_at: string
+          file_url: string
+          id: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          file_url: string
+          id?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          file_url?: string
+          id?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string
+          title: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message: string
+          title: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          title?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          biography: string | null
+          created_at: string
+          id: string
+          name: string
+          social_links: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          biography?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          social_links?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          biography?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          social_links?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      releases: {
+        Row: {
+          cover_art_url: string | null
+          created_at: string
+          id: string
+          release_date: string | null
+          status: Database["public"]["Enums"]["release_status"]
+          title: string
+          type: Database["public"]["Enums"]["release_type"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cover_art_url?: string | null
+          created_at?: string
+          id?: string
+          release_date?: string | null
+          status?: Database["public"]["Enums"]["release_status"]
+          title: string
+          type?: Database["public"]["Enums"]["release_type"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cover_art_url?: string | null
+          created_at?: string
+          id?: string
+          release_date?: string | null
+          status?: Database["public"]["Enums"]["release_status"]
+          title?: string
+          type?: Database["public"]["Enums"]["release_type"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      royalties: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          month: string
+          status: Database["public"]["Enums"]["royalty_status"]
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          id?: string
+          month: string
+          status?: Database["public"]["Enums"]["royalty_status"]
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          month?: string
+          status?: Database["public"]["Enums"]["royalty_status"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      streams: {
+        Row: {
+          date: string
+          downloads: number
+          id: string
+          platform: string
+          streams: number
+          track_id: string
+        }
+        Insert: {
+          date?: string
+          downloads?: number
+          id?: string
+          platform: string
+          streams?: number
+          track_id: string
+        }
+        Update: {
+          date?: string
+          downloads?: number
+          id?: string
+          platform?: string
+          streams?: number
+          track_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "streams_track_id_fkey"
+            columns: ["track_id"]
+            isOneToOne: false
+            referencedRelation: "tracks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tracks: {
+        Row: {
+          audio_file_url: string | null
+          created_at: string
+          duration: number | null
+          id: string
+          isrc: string | null
+          release_id: string
+          title: string
+          track_number: number
+        }
+        Insert: {
+          audio_file_url?: string | null
+          created_at?: string
+          duration?: number | null
+          id?: string
+          isrc?: string | null
+          release_id: string
+          title: string
+          track_number?: number
+        }
+        Update: {
+          audio_file_url?: string | null
+          created_at?: string
+          duration?: number | null
+          id?: string
+          isrc?: string | null
+          release_id?: string
+          title?: string
+          track_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tracks_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "releases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "artist"
+      release_status:
+        | "draft"
+        | "pending"
+        | "approved"
+        | "rejected"
+        | "published"
+      release_type: "single" | "album"
+      royalty_status: "pending" | "available" | "paid"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +404,11 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "artist"],
+      release_status: ["draft", "pending", "approved", "rejected", "published"],
+      release_type: ["single", "album"],
+      royalty_status: ["pending", "available", "paid"],
+    },
   },
 } as const
