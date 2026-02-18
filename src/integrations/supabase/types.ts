@@ -72,6 +72,7 @@ export type Database = {
           created_at: string
           id: string
           name: string
+          plan: string
           social_links: Json | null
           updated_at: string
           user_id: string
@@ -82,6 +83,7 @@ export type Database = {
           created_at?: string
           id?: string
           name?: string
+          plan?: string
           social_links?: Json | null
           updated_at?: string
           user_id: string
@@ -92,6 +94,7 @@ export type Database = {
           created_at?: string
           id?: string
           name?: string
+          plan?: string
           social_links?: Json | null
           updated_at?: string
           user_id?: string

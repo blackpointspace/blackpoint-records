@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
-import { Users, Disc3, DollarSign, TrendingUp, Search } from "lucide-react";
+import { Users, Package, DollarSign, Store, Clock, Search } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -15,12 +14,14 @@ interface AdminStats {
   totalReleases: number;
   totalStreams: number;
   totalRoyalties: number;
+  pendingReleases: number;
 }
 
 interface ArtistRow {
   user_id: string;
   name: string;
   avatar_url: string | null;
+  plan: string;
 }
 
 const CHART_COLORS = [
@@ -29,7 +30,7 @@ const CHART_COLORS = [
 ];
 
 const AdminDashboard = () => {
-  const [stats, setStats] = useState<AdminStats>({ totalArtists: 0, totalReleases: 0, totalStreams: 0, totalRoyalties: 0 });
+  const [stats, setStats] = useState<AdminStats>({ totalArtists: 0, totalReleases: 0, totalStreams: 0, totalRoyalties: 0, pendingReleases: 0 });
   const [artists, setArtists] = useState<ArtistRow[]>([]);
   const [search, setSearch] = useState("");
   const [streamsByDate, setStreamsByDate] = useState<{ date: string; streams: number }[]>([]);
@@ -39,16 +40,17 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     const fetchAll = async () => {
-      const [artistsRes, releasesRes, streamsRes, royaltiesRes, platformRes, monthlyRoyRes] = await Promise.all([
-        supabase.from("profiles").select("user_id, name, avatar_url"),
+      const [artistsRes, releasesRes, streamsRes, royaltiesRes, platformRes, monthlyRoyRes, pendingRes] = await Promise.all([
+        supabase.from("profiles").select("user_id, name, avatar_url, plan"),
         supabase.from("releases").select("id", { count: "exact", head: true }),
         supabase.from("streams").select("streams, date, platform"),
         supabase.from("royalties").select("amount"),
         supabase.from("streams").select("platform, streams"),
         supabase.from("royalties").select("month, amount"),
+        supabase.from("releases").select("id", { count: "exact", head: true }).eq("status", "pending"),
       ]);
 
-      const artistList = artistsRes.data || [];
+      const artistList = (artistsRes.data || []) as ArtistRow[];
       setArtists(artistList);
 
       const totalStreams = (streamsRes.data || []).reduce((sum, s) => sum + (s.streams || 0), 0);
@@ -59,48 +61,36 @@ const AdminDashboard = () => {
         totalReleases: releasesRes.count || 0,
         totalStreams,
         totalRoyalties: totalRoy,
+        pendingReleases: pendingRes.count || 0,
       });
 
-      // Streams by date (aggregate)
       const dateMap: Record<string, number> = {};
       (streamsRes.data || []).forEach((s) => {
         const d = s.date;
         dateMap[d] = (dateMap[d] || 0) + (s.streams || 0);
       });
       setStreamsByDate(
-        Object.entries(dateMap)
-          .sort(([a], [b]) => a.localeCompare(b))
-          .slice(-30)
-          .map(([date, streams]) => ({ date, streams }))
+        Object.entries(dateMap).sort(([a], [b]) => a.localeCompare(b)).slice(-30).map(([date, streams]) => ({ date, streams }))
       );
 
-      // Streams by platform
       const platMap: Record<string, number> = {};
       (platformRes.data || []).forEach((s) => {
         platMap[s.platform] = (platMap[s.platform] || 0) + (s.streams || 0);
       });
       setStreamsByPlatform(
-        Object.entries(platMap).map(([name, value], i) => ({
-          name,
-          value,
-          color: CHART_COLORS[i % CHART_COLORS.length],
-        }))
+        Object.entries(platMap).map(([name, value], i) => ({ name, value, color: CHART_COLORS[i % CHART_COLORS.length] }))
       );
 
-      // Royalties by month
       const monthMap: Record<string, number> = {};
       (monthlyRoyRes.data || []).forEach((r) => {
         monthMap[r.month] = (monthMap[r.month] || 0) + Number(r.amount || 0);
       });
       setRoyaltiesByMonth(
-        Object.entries(monthMap)
-          .sort(([a], [b]) => a.localeCompare(b))
-          .map(([month, amount]) => ({ month, amount }))
+        Object.entries(monthMap).sort(([a], [b]) => a.localeCompare(b)).map(([month, amount]) => ({ month, amount }))
       );
 
       setLoading(false);
     };
-
     fetchAll();
   }, []);
 
@@ -110,15 +100,14 @@ const AdminDashboard = () => {
     return n.toString();
   };
 
-  const filteredArtists = artists.filter((a) =>
-    a.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredArtists = artists.filter((a) => a.name.toLowerCase().includes(search.toLowerCase()));
 
   const statCards = [
-    { label: "Artistas", value: formatNumber(stats.totalArtists), icon: Users },
-    { label: "Lançamentos", value: formatNumber(stats.totalReleases), icon: Disc3 },
-    { label: "Streams Totais", value: formatNumber(stats.totalStreams), icon: TrendingUp },
-    { label: "Royalties Pagos", value: `R$ ${formatNumber(stats.totalRoyalties)}`, icon: DollarSign },
+    { label: "Clientes", value: formatNumber(stats.totalArtists), icon: Users, bg: "bg-blue-500/15", iconColor: "text-blue-400", border: "border-blue-500/20" },
+    { label: "Lançamentos", value: formatNumber(stats.totalReleases), icon: Package, bg: "bg-emerald-500/15", iconColor: "text-emerald-400", border: "border-emerald-500/20" },
+    { label: "Vendas (Streams)", value: formatNumber(stats.totalStreams), icon: DollarSign, bg: "bg-sky-500/15", iconColor: "text-sky-400", border: "border-sky-500/20" },
+    { label: "Royalties Pagos", value: `R$ ${formatNumber(stats.totalRoyalties)}`, icon: Store, bg: "bg-amber-500/15", iconColor: "text-amber-400", border: "border-amber-500/20" },
+    { label: "Pendentes", value: formatNumber(stats.pendingReleases), icon: Clock, bg: "bg-red-500/15", iconColor: "text-red-400", border: "border-red-500/20" },
   ];
 
   if (loading) {
@@ -136,13 +125,13 @@ const AdminDashboard = () => {
         <p className="text-muted-foreground text-sm">Visão geral da plataforma.</p>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Colored Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {statCards.map((s) => (
-          <Card key={s.label} className="bg-card border-border">
+          <Card key={s.label} className={`border ${s.border} bg-card`}>
             <CardContent className="p-5">
-              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
-                <s.icon className="w-5 h-5 text-primary" />
+              <div className={`w-10 h-10 rounded-lg ${s.bg} flex items-center justify-center mb-3`}>
+                <s.icon className={`w-5 h-5 ${s.iconColor}`} />
               </div>
               <p className="text-2xl font-display font-bold text-foreground">{s.value}</p>
               <p className="text-xs text-muted-foreground mt-1">{s.label}</p>
@@ -153,7 +142,6 @@ const AdminDashboard = () => {
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Streams over time */}
         <Card className="lg:col-span-2 bg-card border-border">
           <CardHeader>
             <CardTitle className="font-display text-foreground">Streams (últimos 30 dias)</CardTitle>
@@ -177,7 +165,6 @@ const AdminDashboard = () => {
           </CardContent>
         </Card>
 
-        {/* Streams by Platform */}
         <Card className="bg-card border-border">
           <CardHeader>
             <CardTitle className="font-display text-foreground">Por Plataforma</CardTitle>
@@ -262,6 +249,7 @@ const AdminDashboard = () => {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-foreground">{a.name}</p>
+                      <p className="text-xs text-muted-foreground">Plano: {a.plan || "Orbit"}</p>
                     </div>
                   </div>
                   <Button variant="ghost" size="sm">Ver</Button>

@@ -18,6 +18,8 @@ import Documents from "./pages/Documents";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminReleases from "./pages/AdminReleases";
 import AdminImport from "./pages/AdminImport";
+import AdminRoyalties from "./pages/AdminRoyalties";
+import AdminArtists from "./pages/AdminArtists";
 import DashboardLayout from "./components/layout/DashboardLayout";
 import NotFound from "./pages/NotFound";
 
@@ -50,7 +52,8 @@ const App = () => (
             <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><DashboardLayout isAdmin /></ProtectedRoute>}>
               <Route index element={<AdminDashboard />} />
               <Route path="releases" element={<AdminReleases />} />
-              <Route path="artists" element={<AdminDashboard />} />
+              <Route path="artists" element={<AdminArtists />} />
+              <Route path="royalties" element={<AdminRoyalties />} />
               <Route path="notifications" element={<Notifications />} />
               <Route path="import" element={<AdminImport />} />
             </Route>
