@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -12,19 +13,52 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { signIn, signUp, user, role } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Redirect if already logged in
+  if (user && role) {
+    navigate(role === "admin" ? "/admin" : "/dashboard", { replace: true });
+    return null;
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Mock login - redirect based on email
-    if (email.includes("admin")) {
-      toast({ title: "Bem-vindo, Admin!", description: "Redirecionando para o painel administrativo." });
-      navigate("/admin");
+    setLoading(true);
+
+    if (isLogin) {
+      const { error } = await signIn(email, password);
+      if (error) {
+        toast({ title: "Erro ao entrar", description: error.message, variant: "destructive" });
+      } else {
+        toast({ title: "Bem-vindo!", description: "Login realizado com sucesso." });
+        // Role-based redirect happens after auth state updates
+        const checkRole = async () => {
+          const { supabase } = await import("@/integrations/supabase/client");
+          const { data: userData } = await supabase.auth.getUser();
+          if (userData.user) {
+            const { data: roleData } = await supabase.from("user_roles").select("role").eq("user_id", userData.user.id).single();
+            navigate(roleData?.role === "admin" ? "/admin" : "/dashboard");
+          }
+        };
+        checkRole();
+      }
     } else {
-      toast({ title: "Bem-vindo!", description: "Redirecionando para seu dashboard." });
-      navigate("/dashboard");
+      if (password.length < 6) {
+        toast({ title: "Erro", description: "A senha deve ter no mínimo 6 caracteres.", variant: "destructive" });
+        setLoading(false);
+        return;
+      }
+      const { error } = await signUp(email, password, name);
+      if (error) {
+        toast({ title: "Erro ao criar conta", description: error.message, variant: "destructive" });
+      } else {
+        toast({ title: "Conta criada!", description: "Verifique seu email para confirmar a conta." });
+      }
     }
+    setLoading(false);
   };
 
   return (
@@ -51,7 +85,7 @@ const Login = () => {
             {!isLogin && (
               <div>
                 <Label htmlFor="name" className="text-foreground">Nome Artístico</Label>
-                <Input id="name" placeholder="Seu nome artístico" value={name} onChange={(e) => setName(e.target.value)} className="mt-1 bg-muted border-border" />
+                <Input id="name" placeholder="Seu nome artístico" value={name} onChange={(e) => setName(e.target.value)} className="mt-1 bg-muted border-border" required={!isLogin} />
               </div>
             )}
             <div>
@@ -68,21 +102,11 @@ const Login = () => {
               </div>
             </div>
 
-            <Button type="submit" className="w-full gradient-purple text-primary-foreground border-0">
-              {isLogin ? "Entrar" : "Criar Conta"}
+            <Button type="submit" className="w-full gradient-purple text-primary-foreground border-0" disabled={loading}>
+              {loading ? "Aguarde..." : isLogin ? "Entrar" : "Criar Conta"}
             </Button>
           </form>
-
-          {isLogin && (
-            <p className="text-center text-sm text-muted-foreground mt-4">
-              <span className="text-primary cursor-pointer hover:underline">Esqueceu a senha?</span>
-            </p>
-          )}
         </div>
-
-        <p className="text-center text-xs text-muted-foreground mt-6">
-          Demo: use <span className="text-primary">admin@blackpoint.space</span> para admin ou qualquer email para artista
-        </p>
       </div>
     </div>
   );
