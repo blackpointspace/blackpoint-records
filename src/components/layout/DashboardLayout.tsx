@@ -2,18 +2,18 @@ import { Link, useLocation, Outlet } from "react-router-dom";
 import {
   Music, LayoutDashboard, Disc3, DollarSign, User, Bell, FileText, LogOut, Shield, Users, Upload,
   Package, ShoppingCart, Store, Image, BarChart3, MessageSquare, Megaphone, Headphones, CreditCard,
-  Globe, Settings, UserCog, Cpu, Puzzle
+  Globe, Settings, UserCog, Cpu, Puzzle, Library, Wrench, TrendingUp, Receipt, UserCircle
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
 
 const artistLinks = [
-  { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { to: "/dashboard/releases", icon: Disc3, label: "Lançamentos" },
-  { to: "/dashboard/royalties", icon: DollarSign, label: "Royalties" },
-  { to: "/dashboard/profile", icon: User, label: "Perfil" },
-  { to: "/dashboard/notifications", icon: Bell, label: "Notificações" },
-  { to: "/dashboard/documents", icon: FileText, label: "Documentos" },
+  { to: "/dashboard", icon: LayoutDashboard, label: "Painel de controle" },
+  { to: "/dashboard/releases", icon: Library, label: "Biblioteca" },
+  { to: "/dashboard/releases/new", icon: Wrench, label: "Serviços" },
+  { to: "/dashboard/royalties", icon: TrendingUp, label: "Analytics" },
+  { to: "/dashboard/documents", icon: Receipt, label: "Faturamento" },
+  { to: "/dashboard/profile", icon: UserCircle, label: "Conta" },
 ];
 
 const adminLinks = [
