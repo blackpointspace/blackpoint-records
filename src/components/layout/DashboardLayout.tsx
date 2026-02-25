@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const artistLinks = [
   { to: "/dashboard", icon: LayoutDashboard, label: "Painel de controle" },
@@ -69,7 +70,10 @@ const DashboardLayout = ({ isAdmin = false }: DashboardLayoutProps) => {
           })}
         </nav>
 
-        <div className="border-t border-sidebar-border p-3 space-y-1">
+        <div className="border-t border-sidebar-border p-3 space-y-2">
+          <div className="px-3 py-1">
+            <ThemeToggle />
+          </div>
           {profile && (
             <div className="px-3 py-2">
               <p className="text-sm font-medium text-foreground truncate">{profile.name}</p>

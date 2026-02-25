@@ -38,7 +38,12 @@ const NewRelease = () => {
   const [type, setType] = useState("single");
   const [genre, setGenre] = useState("");
   const [version, setVersion] = useState("");
-  const [releaseDate, setReleaseDate] = useState("");
+  const defaultReleaseDate = () => {
+    const d = new Date();
+    d.setDate(d.getDate() + 20);
+    return d.toISOString().split("T")[0];
+  };
+  const [releaseDate, setReleaseDate] = useState(defaultReleaseDate());
 
   // Artists
   const [mainArtist, setMainArtist] = useState("");
@@ -223,8 +228,9 @@ const NewRelease = () => {
               </div>
             </div>
             <div>
-              <Label className="text-foreground">Data de Lançamento</Label>
+              <Label className="text-foreground">Data de Lançamento (data prevista)</Label>
               <Input type="date" value={releaseDate} onChange={(e) => setReleaseDate(e.target.value)} className="mt-1 bg-muted border-border" />
+              <p className="text-xs text-muted-foreground mt-1">Data prevista: mínimo 20 dias a partir de hoje.</p>
             </div>
           </CardContent>
         </Card>
