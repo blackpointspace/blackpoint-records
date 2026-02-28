@@ -12,6 +12,10 @@ import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { Badge } from "@/components/ui/badge";
+import { Lock, Info } from "lucide-react";
+
+const LOCKED_LABEL_PLANS = ["Orbit", "Nebula", "Dark Orbit"];
 
 const GENRES = [
   "Pop", "Rock", "Hip-Hop/Rap", "R&B/Soul", "Eletrônica", "Sertanejo", "Funk", "MPB",
@@ -76,7 +80,11 @@ const NewRelease = () => {
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
+
+  const userPlan = profile?.plan || "Orbit";
+  const isLabelLocked = LOCKED_LABEL_PLANS.includes(userPlan);
+  const effectiveLabel = isLabelLocked ? "BlackPoint Records" : label;
 
   const addTrack = () => setTracks([...tracks, { title: "", isrc: "", file: null, uploading: false, progress: 0 }]);
   const removeTrack = (i: number) => setTracks(tracks.filter((_, idx) => idx !== i));
@@ -256,8 +264,29 @@ const NewRelease = () => {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label className="text-foreground">Selo (Label)</Label>
-                <Input placeholder="Nome do selo" value={label} onChange={(e) => setLabel(e.target.value)} className="mt-1 bg-muted border-border" />
+                <div className="flex items-center gap-2">
+                  <Label className="text-foreground">Selo (Label)</Label>
+                  {isLabelLocked && (
+                    <Badge variant="outline" className="text-[10px] border-primary/30 text-primary gap-1">
+                      <Lock className="w-3 h-3" /> Plano {userPlan}
+                    </Badge>
+                  )}
+                </div>
+                {isLabelLocked ? (
+                  <div>
+                    <Input value="BlackPoint Records" disabled className="mt-1 bg-muted border-border opacity-70" />
+                    <div className="flex items-start gap-1.5 mt-2 p-2.5 rounded-lg bg-primary/5 border border-primary/10">
+                      <Info className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        Seu plano <strong className="text-foreground">{userPlan}</strong> utiliza o selo BlackPoint Records.
+                        Para usar um selo personalizado, contrate o add-on por{" "}
+                        <strong className="text-primary">R$ 99,00/ano</strong>.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <Input placeholder="Nome do selo" value={label} onChange={(e) => setLabel(e.target.value)} className="mt-1 bg-muted border-border" />
+                )}
               </div>
               <div>
                 <Label className="text-foreground">© Ano Direitos Autorais</Label>
