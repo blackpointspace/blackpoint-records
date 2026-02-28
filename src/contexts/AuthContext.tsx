@@ -7,7 +7,7 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   role: "admin" | "artist" | null;
-  profile: { name: string; avatar_url: string | null } | null;
+  profile: { name: string; avatar_url: string | null; plan: string } | null;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signUp: (email: string, password: string, name: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
@@ -20,12 +20,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState<"admin" | "artist" | null>(null);
-  const [profile, setProfile] = useState<{ name: string; avatar_url: string | null } | null>(null);
+  const [profile, setProfile] = useState<{ name: string; avatar_url: string | null; plan: string } | null>(null);
 
   const fetchUserData = async (userId: string) => {
     const [roleRes, profileRes] = await Promise.all([
       supabase.from("user_roles").select("role").eq("user_id", userId).single(),
-      supabase.from("profiles").select("name, avatar_url").eq("user_id", userId).single(),
+      supabase.from("profiles").select("name, avatar_url, plan").eq("user_id", userId).single(),
     ]);
     if (roleRes.data) setRole(roleRes.data.role as "admin" | "artist");
     if (profileRes.data) setProfile(profileRes.data);
